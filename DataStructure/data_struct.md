@@ -257,19 +257,140 @@ class ArrayFun{
 3. 删除慢，如果找到待删除元素的位置，并将之后的元素向前移动一位（如果删除的是第一位，所有元素都需移动）
 4. 长度不可变，数组一旦创建，大小就固定了。不能进行动态扩容，如果初始化一个很大的数组，会浪费空间；如果小了，会超过数组容量的最大值。
 
+## 栈
 
+栈（stack）又名堆栈，它是一种运算受限的线性表。限定仅在表尾进行插入和删除操作的线性表。这一端被成为*栈顶*，相对的，把另一端成为*栈底*。向一个栈插入新元素又称为**进栈**、**入栈**或**压栈**，它是把新元素放到栈顶元素的上面，使之成为新的栈顶元素；从一个栈删除元素又称为**出栈**或**退栈**，它是把栈顶元素删除掉，使之相邻的元素称为新的栈顶元素。（类似于手枪的子弹夹）
 
+![æ çæ¨¡å](https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=4b2162dc1bd5ad6eaef963e8b1cb39a3/8b82b9014a90f603eab7c55f3912b31bb051eda7.jpg)
 
+*栈的Java实现(基于数组)：*
 
+```java
+public class StackTest {
+    public static void main(String[] args) throws Exception {
+        StackFun stack = new StackFun(3);
+        System.out.println("初始化时栈的容量为：" + stack.stackSize);
+        stack.push(1);
+        stack.push(2);
+        stack.push("3");
+        stack.push(6.23);
+        System.out.println("入栈四个元素后栈的容量为：" + stack.stackSize);
+        System.out.println("栈顶元素为：" + stack.peek());
+        stack.pop();
+        System.out.println(stack.peek());
+    }
+}
 
+class StackFun {
+    //创建一个Object类型的数组，用于存储任意类型的数据
+    private Object[] elems;
+    //指向栈顶的指针
+    private int top;
+    //栈的总容量
+    public int stackSize;
 
+    /**
+     * 默认创建容量为10的栈
+     */
+    public StackFun(){
+        this.elems = new Object[10];
+        this.top = -1;
+        this.stackSize = 10;
+    }
 
+    /**
+     * 创建一个指定容量的栈
+     * @param initCapacity 待创建栈的容量
+     */
+    public StackFun(int initCapacity) throws Exception {
+        if (initCapacity < 0){
+            throw new IllegalAccessException("栈的容量不能小于0：" + initCapacity);
+        }
 
+        this.elems = new Object[initCapacity];
+        this.top = -1;
+        this.stackSize = initCapacity;
+    }
 
+    /**
+     * 数据压栈
+     * @param elem 待压栈的元素
+     * @return 成功的话返回该元素
+     */
+    public Object push(Object elem){
+        //是否需要扩容
+        isGrow(top + 1);
+        elems[++top] = elem;
+        return elem;
+    }
 
+    /**
+     * 弹出元素
+     * @return 返回弹出的元素
+     */
+    public Object pop(){
+        remove(top);
+        return peek();
+    }
 
+    /**
+     * 获取栈顶的元素
+     * @return 返回栈顶的元素
+     */
+    public Object peek(){
+        if (top == -1){
+            throw new EmptyStackException();
+        }
+        return elems[top];
+    }
 
+    /**
+     * 判断栈是否为空
+     * @return true为空
+     */
+    public boolean isEmpty(){
+        return (top == -1);
+    }
 
+    /**
+     * 删除栈顶元素
+     * @param top 栈顶的指针
+     */
+    public void remove(int top){
+        elems[top] = null;
+        this.top --;
+    }
+
+    /**
+     *  判断栈是否需要扩容，需要的话如果扩大两倍后未超int最大值，则扩大两倍，否则扩大至int最大值
+     * @param minCapacity 新元素入栈后栈的容量
+     * @return 扩容返回true
+     */
+    public boolean isGrow(int minCapacity){
+        int oldCapacity = stackSize;
+        //判断当前元素压入栈之后总容量是否大于之前的容量，是的话进行扩容
+        if (minCapacity >= oldCapacity){
+            //定义扩容之后的栈的总容量
+            int newCapacity = 0;
+            //栈容量扩大俩倍
+            if ((oldCapacity << 1) - Integer.MAX_VALUE > 0){
+                newCapacity = Integer.MAX_VALUE;
+            } else {
+                newCapacity = (oldCapacity << 1);
+            }
+            this.stackSize = newCapacity;
+            elems = Arrays.copyOf(elems, stackSize);
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+```
+
+*总结：*
+
+堆栈是一个比较简单的数据结构，它最主要的特点是：**先进先出**，入栈和出栈的时间复杂度都为O(1)。
 
 
 
